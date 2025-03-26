@@ -72,8 +72,8 @@ def set_initial_state(states, *args):
         initial_state[arg] = True
     return initial_state
 
-def set_goal(states, *args):
-    goal = {key: False for key in states}
+def set_goal(*args):
+    goal = {}
     for arg in args:
         goal[arg] = True
     return goal
@@ -90,7 +90,7 @@ def set_goal(states, *args):
 problem = Planning_problem(
     BlocksWorld().domain,
     set_initial_state(BlocksWorld().states, 'COnA', 'AOnTable', 'BOnTable'),
-    set_goal(BlocksWorld().states, 'AOnB', 'BOnC', 'COnTable')
+    set_goal('AOnB', 'BOnC', 'COnTable')
 )
 
 SearcherMPP(Forward_STRIPS(problem)).search()
