@@ -2,13 +2,56 @@ from stripsProblem import STRIPS_domain, Strips, Planning_problem
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
 
+
+def generate_actions_dict():
+    actions = []
+
+    # Pickup (from Table)
+    for i in ['A', 'B', 'C']:
+        actions.append(Strips(
+            'PickUp' + i,
+            {i + 'OnTable': True, **{k + 'InHand': False for k in ['A', 'B', 'C']}, **{k + 'On' + i: False for k in ['A', 'B', 'C'] if k != i}},
+            {i + 'OnTable': False, i + 'InHand': True}
+        ))
+
+    # Put down (on Table)
+    for i in ['A', 'B', 'C']:
+        actions.append(Strips(
+            'PutDown' + i,
+            {i + 'InHand': True},
+            {i + 'OnTable': True, i + 'InHand': False}
+        ))
+
+    # Unstack (from another block)
+    for i in ['A', 'B', 'C']:
+        for j in ['A', 'B', 'C']:
+            if i != j:
+                actions.append(Strips(
+                    'Unstack' + i + j,
+                    {i + 'On' + j: True, **{k + 'InHand': False for k in ['A', 'B', 'C']}, **{k + 'On' + i: False for k in ['A', 'B', 'C'] if k != i}},
+                    {i + 'On' + j: False, i + 'InHand': True}
+                ))
+
+    # Stack (on another block)
+    for i in ['A', 'B', 'C']:
+        for j in ['A', 'B', 'C']:
+            if i != j:
+                actions.append(Strips(
+                    'Stack' + i + j,
+                    {i + 'InHand': True, **{k + 'On' + j: False for k in ['A', 'B', 'C'] if k != j}},
+                    {i + 'On' + j: True, i + 'InHand': False}
+                ))
+
+    return actions
+
+
 class BlocksWorld:
     def __init__(self):
         self.boolean = [False, True]
         self.states = self.generate_domain_dict()
         self.domain = STRIPS_domain(
             self.states,
-            self.generate_actions_dict(),
+            generate_actions_dict(),
         )
 
     def generate_domain_dict(self):
@@ -25,46 +68,6 @@ class BlocksWorld:
 
         return domain
 
-    def generate_actions_dict(self):
-        actions = []
-
-        # Pickup (from Table)
-        for i in ['A', 'B', 'C']:
-            actions.append(Strips(
-                'PickUp' + i,
-                {i + 'OnTable': True, **{k + 'InHand': False for k in ['A', 'B', 'C']}, **{k + 'On' + i: False for k in ['A', 'B', 'C'] if k != i}},
-                {i + 'OnTable': False, i + 'InHand': True}
-            ))
-
-        # Put down (on Table)
-        for i in ['A', 'B', 'C']:
-            actions.append(Strips(
-                'PutDown' + i,
-                {i + 'InHand': True},
-                {i + 'OnTable': True, i + 'InHand': False}
-            ))
-
-        # Unstack (from another block)
-        for i in ['A', 'B', 'C']:
-            for j in ['A', 'B', 'C']:
-                if i != j:
-                    actions.append(Strips(
-                        'Unstack' + i + j,
-                        {i + 'On' + j: True, **{k + 'InHand': False for k in ['A', 'B', 'C']}, **{k + 'On' + i: False for k in ['A', 'B', 'C'] if k != i}},
-                        {i + 'On' + j: False, i + 'InHand': True}
-                    ))
-
-        # Stack (on another block)
-        for i in ['A', 'B', 'C']:
-            for j in ['A', 'B', 'C']:
-                if i != j:
-                    actions.append(Strips(
-                        'Stack' + i + j,
-                        {i + 'InHand': True, **{k + 'On' + j: False for k in ['A', 'B', 'C'] if k != j}},
-                        {i + 'On' + j: True, i + 'InHand': False}
-                    ))
-
-        return actions
 
 def set_initial_state(states, *args):
     initial_state = {key: False for key in states}
