@@ -13,7 +13,8 @@ class BlocksWorld:
             self.generate_actions_dict(),
         )
 
-    def generate_blocks_list(self, num_of_blocks=3):
+    @staticmethod
+    def generate_blocks_list(num_of_blocks=3):
         return [chr(i) for i in range(65, 65 + num_of_blocks)]
 
 
