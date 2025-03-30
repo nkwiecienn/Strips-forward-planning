@@ -1,5 +1,4 @@
 import time
-
 from stripsProblem import STRIPS_domain, Strips, Planning_problem
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
@@ -101,14 +100,14 @@ def set_goal(*args):
     return goal
 
 # Problem:
-# D
-# C E
+# C
+# D E
 # A B F
 
 initial_state = set_initial_state(
     BlocksWorld().states,
-    'DOnC',
-    'COnA',
+    'COnD',
+    'DOnA',
     'AOnTable',
     'EOnB',
     'BOnTable',
@@ -138,6 +137,8 @@ problem = Planning_problem(
     goal
 )
 
+print("--------------------------------------TASKS 1------------------------------------------------------------")
+
 start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem)).search()
 end_time = time.time()
@@ -147,3 +148,85 @@ start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem, heur=BlocksWorld.heuristic)).search()
 end_time = time.time()
 print(f"Time taken with heuristic: {end_time - start_time} seconds")
+
+print("--------------------------------------TASKS 2------------------------------------------------------------")
+
+start_time = time.time()
+
+subgoal1 = set_goal(
+    'FOnTable',
+    'EOnF',
+    'COnB',
+)
+
+subgoal2 = set_goal(
+    'DOnE',
+    'COnD',
+)
+
+subproblem1 = Planning_problem(
+    BlocksWorld().domain,
+    initial_state,
+    subgoal1,
+)
+
+subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1)).search().end().assignment
+
+subproblem2 = Planning_problem(
+    BlocksWorld().domain,
+    subsolution1,
+    subgoal2,
+)
+
+subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2)).search().end().assignment
+
+finalproblem = Planning_problem(
+    BlocksWorld().domain,
+    subsolution2,
+    goal
+)
+
+SearcherMPP(Forward_STRIPS(finalproblem)).search()
+
+end_time = time.time()
+print(f"Time taken without heuristic but with subgoals: {end_time - start_time} seconds")
+
+start_time = time.time()
+
+subgoal1 = set_goal(
+    'FOnTable',
+    'EOnF',
+    'COnB',
+)
+
+subgoal2 = set_goal(
+    'DOnE',
+    'COnD',
+)
+
+subproblem1 = Planning_problem(
+    BlocksWorld().domain,
+    initial_state,
+    subgoal1,
+)
+
+subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1, heur=BlocksWorld.heuristic)).search().end().assignment
+
+subproblem2 = Planning_problem(
+    BlocksWorld().domain,
+    subsolution1,
+    subgoal2,
+)
+
+subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2, heur=BlocksWorld.heuristic)).search().end().assignment
+
+finalproblem = Planning_problem(
+    BlocksWorld().domain,
+    subsolution2,
+    goal
+)
+
+SearcherMPP(Forward_STRIPS(finalproblem, heur=BlocksWorld.heuristic)).search()
+
+end_time = time.time()
+print(f"Time taken without heuristic but with subgoals: {end_time - start_time} seconds")
