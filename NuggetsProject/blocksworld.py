@@ -138,8 +138,6 @@ problem = Planning_problem(
     goal
 )
 
-SearcherMPP(Forward_STRIPS(problem)).search()
-
 start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem)).search()
 end_time = time.time()

@@ -1,3 +1,5 @@
+import time
+
 from stripsProblem import STRIPS_domain, Strips, Planning_problem
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
@@ -18,6 +20,10 @@ class RubiksCube:
 
     def generate_actions_dict(self):
         actions = []
+
+        # (1 2 3 4) 5 6 --0--> (4 3 2 1) 5 6
+        # 1 (2 3 4 5) 6 --1--> 1 (5 4 3 2) 6
+        # 1 2 (3 4 5 6) --2--> 1 2 (6 5 4 3)
 
         for val1 in self.values:
             for val2 in self.values:
@@ -45,8 +51,17 @@ class RubiksCube:
 
         return actions
 
+    @staticmethod
+    def heuristic(state, goal):
+        cost = 0
+        for pos in state:
+            if state[pos] != goal[pos]:
+                cost += 1
+        return cost
+
+
 # Define the initial and goal states
-initial_state = {'Position1': 1, 'Position2': 3, 'Position3': 2, 'Position4': 6, 'Position5': 5, 'Position6': 4}
+initial_state = {'Position1': 1, 'Position2': 3, 'Position3': 4, 'Position4': 5, 'Position5': 6, 'Position6': 2}
 goal_state = {'Position1': 1, 'Position2': 2, 'Position3': 3, 'Position4': 4, 'Position5': 5, 'Position6': 6}
 
 # Create the planning problem
@@ -57,4 +72,12 @@ problem = Planning_problem(
 )
 
 # Search for the solution
+start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem)).search()
+end_time = time.time()
+print(f"Time taken without heuristic: {end_time - start_time} seconds")
+
+start_time = time.time()
+SearcherMPP(Forward_STRIPS(problem, heur=RubiksCube.heuristic)).search()
+end_time = time.time()
+print(f"Time taken with heuristic: {end_time - start_time} seconds")
