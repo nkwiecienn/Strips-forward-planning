@@ -92,25 +92,25 @@ class BlocksWorld:
         return cost
 
 
-def set_initial_state(states, *args):
-    initial_state = {key: False for key in states}
-    for arg in args:
-        initial_state[arg] = True
-    return initial_state
+    def set_initial_state(self, *args):
+        initial_state = {key: False for key in self.states}
+        for arg in args:
+            initial_state[arg] = True
+        return initial_state
 
-def set_goal(*args):
-    goal = {}
-    for arg in args:
-        goal[arg] = True
-    return goal
+    @staticmethod
+    def set_goal(*args):
+        goal = {}
+        for arg in args:
+            goal[arg] = True
+        return goal
 
 # Problem:
 # C
 # D E
 # A B F
 
-initial_state = set_initial_state(
-    BlocksWorld(6).states,
+initial_state = BlocksWorld(6).set_initial_state(
     'COnD',
     'DOnA',
     'AOnTable',
@@ -127,7 +127,7 @@ initial_state = set_initial_state(
 # E
 # F
 
-goal = set_goal(
+goal = BlocksWorld(6).set_goal(
     'FOnTable',
     'EOnF',
     'DOnE',
@@ -158,13 +158,13 @@ print("--------------------------------------TASKS 2----------------------------
 
 start_time = time.time()
 
-subgoal1 = set_goal(
+subgoal1 = BlocksWorld(6).set_goal(
     'FOnTable',
     'EOnF',
     'COnB',
 )
 
-subgoal2 = set_goal(
+subgoal2 = BlocksWorld(6).set_goal(
     'DOnE',
     'COnD',
 )
@@ -198,13 +198,13 @@ print(f"Time taken without heuristic but with subgoals: {end_time - start_time} 
 
 start_time = time.time()
 
-subgoal1 = set_goal(
+subgoal1 = BlocksWorld(6).set_goal(
     'FOnTable',
     'EOnF',
     'COnB',
 )
 
-subgoal2 = set_goal(
+subgoal2 = BlocksWorld(6).set_goal(
     'DOnE',
     'COnD',
 )

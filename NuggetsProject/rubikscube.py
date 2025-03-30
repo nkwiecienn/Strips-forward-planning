@@ -59,10 +59,26 @@ class RubiksCube:
                 cost += 1
         return cost
 
+    def set_initial_state(self, *args):
+        initial_state = {}
+
+        for i in range(6):
+            initial_state[self.positions[i]] = args[i]
+
+        return  initial_state
+
+    def goal(self, *args):
+        goal = {}
+
+        for i in range(6):
+            goal[self.positions[i]] = args[i]
+
+        return goal
+
 
 # Define the initial and goal states
-initial_state = {'Position1': 4, 'Position2': 5, 'Position3': 2, 'Position4': 3, 'Position5': 1, 'Position6': 6}
-goal_state = {'Position1': 1, 'Position2': 2, 'Position3': 3, 'Position4': 4, 'Position5': 5, 'Position6': 6}
+initial_state = RubiksCube().set_initial_state(4, 5, 2, 3, 1, 6)
+goal_state = RubiksCube().goal(1, 2, 3, 4, 5, 6)
 
 # Create the planning problem
 problem = Planning_problem(

@@ -128,17 +128,18 @@ class ShakeyWorld:
         return cost
 
 
-def set_initial_state(states, *args):
-    initial_state = {key: False for key in states}
-    for arg in args:
-        initial_state[arg] = True
-    return initial_state
+    def set_initial_state(self, *args):
+        initial_state = {key: False for key in self.states}
+        for arg in args:
+            initial_state[arg] = True
+        return initial_state
 
-def set_goal(*args):
-    goal = {}
-    for arg in args:
-        goal[arg] = True
-    return goal
+    @staticmethod
+    def set_goal(*args):
+        goal = {}
+        for arg in args:
+            goal[arg] = True
+        return goal
 
 
 # +----------------+   +----------------+   +----------------+
@@ -152,8 +153,7 @@ def set_goal(*args):
 #         ||                    ||                    ||
 #    Adjacent to B         Adjacent to A,C       Adjacent to B
 
-initial_state = set_initial_state(
-    ShakeyWorld().states,
+initial_state = ShakeyWorld().set_initial_state(
     'RobotInRoomA',
     'HandEmpty',
     'Ball1InRoomA',
@@ -177,7 +177,7 @@ initial_state = set_initial_state(
 # |                |   |                |   |                |
 # +----------------+   +----------------+   +----------------+
 
-goal1 = set_goal(
+goal1 = ShakeyWorld().set_goal(
     'Ball1InRoomB',
     'Box1InRoomB',
     'RobotInRoomC',
@@ -206,13 +206,13 @@ print("--------------------------------------TASKS 2----------------------------
 
 start_time = time.time()
 
-subgoal1 = set_goal(
+subgoal1 = ShakeyWorld().set_goal(
     'RobotInRoomA',
     'RobotCarryingBall1',
     'LightOnRoomA'
 )
 
-subgoal2 = set_goal(
+subgoal2 = ShakeyWorld().set_goal(
     'RobotInRoomB',
     'Box1InRoomB',
     'RobotCarryingBall2'
@@ -247,13 +247,13 @@ print(f"Time taken without heuristic but with subgoals: {end_time - start_time} 
 
 start_time = time.time()
 
-subgoal1 = set_goal(
+subgoal1 = ShakeyWorld().set_goal(
     'RobotInRoomA',
     'RobotCarryingBall1',
     'LightOnRoomA'
 )
 
-subgoal2 = set_goal(
+subgoal2 = ShakeyWorld().set_goal(
     'RobotInRoomB',
     'Box1InRoomB',
     'RobotCarryingBall2'
@@ -281,7 +281,7 @@ finalproblem = Planning_problem(
     goal1
 )
 
-finalsolution = SearcherMPP(Forward_STRIPS(finalproblem, heur=ShakeyWorld.heuristic)).search()
+SearcherMPP(Forward_STRIPS(finalproblem, heur=ShakeyWorld.heuristic)).search()
 
 end_time = time.time()
 print(f"Time taken with heuristic and subgoals: {end_time - start_time} seconds")
