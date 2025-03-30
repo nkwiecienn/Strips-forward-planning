@@ -1,3 +1,4 @@
+import time
 from stripsProblem import STRIPS_domain, Strips, Planning_problem
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
@@ -21,9 +22,23 @@ class Dinner:
             }
         )
 
+    @staticmethod
+    def heuristic(state, goal):
+        return sum(1 for key in goal if state.get(key) != goal[key])
+
+
 problem1 = Planning_problem(
     Dinner().domain,
     {'clean': True, 'quiet': True, 'garbage': True, 'present': False, 'dinner': False},
     {'present': True, 'dinner': True, 'garbage': False, 'clean': True},
 )
-print(SearcherMPP(Forward_STRIPS(problem1)).search())
+
+start_time = time.time()
+SearcherMPP(Forward_STRIPS(problem1)).search()
+end_time = time.time()
+print(f"Time taken without heuristic: {end_time - start_time} seconds")
+
+start_time = time.time()
+SearcherMPP(Forward_STRIPS(problem1, heur=Dinner.heuristic)).search()
+end_time = time.time()
+print(f"Time taken with heuristic: {end_time - start_time} seconds")

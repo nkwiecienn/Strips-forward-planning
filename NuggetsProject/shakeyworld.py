@@ -1,3 +1,5 @@
+import time
+
 from stripsProblem import STRIPS_domain, Strips, Planning_problem
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
@@ -105,6 +107,26 @@ class ShakeyWorld:
 
         return actions
 
+    @staticmethod
+    def heuristic(state, goal):
+        def distance(pos1, pos2):
+            room_positions = {'RoomA': 0, 'RoomB': 1, 'RoomC': 2}
+            return abs(room_positions[pos1] - room_positions[pos2])
+
+        cost = 0
+
+        for key in goal:
+            if state.get(key) != goal[key]:
+                if 'In' in key or 'RobotIn' in key:
+                    item, goal_room = key.split('In')
+                    for room in state:
+                        if state[room] and room.startswith(f'{item}In'):
+                            current_room = room.replace(f'{item}In', '')
+                            cost += distance(current_room, goal_room)
+                            break
+
+        return cost
+
 
 def set_initial_state(states, *args):
     initial_state = {key: False for key in states}
@@ -155,17 +177,25 @@ initial_state = set_initial_state(
 # |                |   |                |   |                |
 # +----------------+   +----------------+   +----------------+
 
-goal = set_goal(
+goal1 = set_goal(
     'Ball1InRoomB',
     'Box1InRoomB',
     'RobotInRoomC',
     'RobotCarryingBall2'
 )
 
-problem = Planning_problem(
+problem1 = Planning_problem(
     ShakeyWorld().domain,
     initial_state,
-    goal
+    goal1
 )
 
-SearcherMPP(Forward_STRIPS(problem)).search()
+start_time = time.time()
+SearcherMPP(Forward_STRIPS(problem1)).search()
+end_time = time.time()
+print(f"Time taken without heuristic: {end_time - start_time} seconds")
+
+start_time = time.time()
+SearcherMPP(Forward_STRIPS(problem1, heur=ShakeyWorld.heuristic)).search()
+end_time = time.time()
+print(f"Time taken with heuristic: {end_time - start_time} seconds")
