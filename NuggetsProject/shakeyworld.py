@@ -190,6 +190,8 @@ problem1 = Planning_problem(
     goal1
 )
 
+print("--------------------------------------TASKS 1------------------------------------------------------------")
+
 start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem1)).search()
 end_time = time.time()
@@ -199,3 +201,87 @@ start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem1, heur=ShakeyWorld.heuristic)).search()
 end_time = time.time()
 print(f"Time taken with heuristic: {end_time - start_time} seconds")
+
+print("--------------------------------------TASKS 2------------------------------------------------------------")
+
+start_time = time.time()
+
+subgoal1 = set_goal(
+    'RobotInRoomA',
+    'RobotCarryingBall1',
+    'LightOnRoomA'
+)
+
+subgoal2 = set_goal(
+    'RobotInRoomB',
+    'Box1InRoomB',
+    'RobotCarryingBall2'
+)
+
+subproblem1 = Planning_problem(
+    ShakeyWorld().domain,
+    initial_state,
+    subgoal1,
+)
+
+subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1)).search().end().assignment
+
+subproblem2 = Planning_problem(
+    ShakeyWorld().domain,
+    subsolution1,
+    subgoal2
+)
+
+subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2)).search().end().assignment
+
+finalproblem = Planning_problem(
+    ShakeyWorld().domain,
+    subsolution2,
+    goal1
+)
+
+finalsolution = SearcherMPP(Forward_STRIPS(finalproblem)).search()
+
+end_time = time.time()
+print(f"Time taken without heuristic but with subgoals: {end_time - start_time} seconds")
+
+start_time = time.time()
+
+subgoal1 = set_goal(
+    'RobotInRoomA',
+    'RobotCarryingBall1',
+    'LightOnRoomA'
+)
+
+subgoal2 = set_goal(
+    'RobotInRoomB',
+    'Box1InRoomB',
+    'RobotCarryingBall2'
+)
+
+subproblem1 = Planning_problem(
+    ShakeyWorld().domain,
+    initial_state,
+    subgoal1,
+)
+
+subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1, heur=ShakeyWorld.heuristic)).search().end().assignment
+
+subproblem2 = Planning_problem(
+    ShakeyWorld().domain,
+    subsolution1,
+    subgoal2
+)
+
+subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2, heur=ShakeyWorld.heuristic)).search().end().assignment
+
+finalproblem = Planning_problem(
+    ShakeyWorld().domain,
+    subsolution2,
+    goal1
+)
+
+finalsolution = SearcherMPP(Forward_STRIPS(finalproblem, heur=ShakeyWorld.heuristic)).search()
+
+end_time = time.time()
+print(f"Time taken with heuristic and subgoals: {end_time - start_time} seconds")
