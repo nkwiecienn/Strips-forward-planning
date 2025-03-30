@@ -137,6 +137,81 @@ subgoal2 = shakey.set_goal(
 Solver.solve_with_subgoal(shakey, initial_state, subgoal1, subgoal2, goal, False)
 Solver.solve_with_subgoal(shakey, initial_state, subgoal1, subgoal2, goal, True)
 
+print('-----------------------------SHAKEY WORLD (20+ STEPS)----------------------------------')
+print('---------------------------------------------------------------------------------------')
+
+shakey = ShakeyWorld()
+
+initial_state = shakey.set_initial_state(
+    'RobotInRoomA',
+    'HandEmpty',
+    'Ball1InRoomA',
+    'Ball2InRoomA',
+    'Ball3InRoomA',
+    'Box1InRoomA',
+    'Box2InRoomB',
+    'Box3InRoomC',
+    'RoomAAdjRoomB', 'RoomBAdjRoomA',
+    'RoomBAdjRoomC', 'RoomCAdjRoomB',
+)
+
+# +----------------+   +----------------+   +----------------+
+# |     RoomA      |   |     RoomB      |   |     RoomC      |
+# |                |   |                |   |                |
+# |  Robot         |   |                |   |                |
+# |  Ball1         |   |                |   |                |
+# |  Ball2         |   |                |   |                |
+# |  Ball3         |   |                |   |                |
+# |  Box1          |   |  Box2          |   |  Box3          |
+# |  Light: OFF    |   |  Light: OFF    |   |  Light: OFF    |
+# +----------------+   +----------------+   +----------------+
+#         ||                    ||                    ||
+#    Adjacent to B         Adjacent to A,C       Adjacent to B
+
+goal = shakey.set_goal(
+    'RobotInRoomB',
+    'Box3InRoomA',
+    'Ball1InRoomC',
+    'Ball2InRoomC',
+    'Ball3InRoomC',
+    'Box1InRoomC',
+    'Box2InRoomC',
+)
+
+# +----------------+   +----------------+   +----------------+
+# |     RoomA      |   |     RoomB      |   |     RoomC      |
+# |                |   |                |   |                |
+# |                |   |    Robot       |   |                |
+# |                |   |                |   |  Ball1         |
+# |                |   |                |   |  Ball2         |
+# |                |   |                |   |  Ball3         |
+# |  Box3          |   |                |   |  Box2, Box1    |
+# +----------------+   +----------------+   +----------------+
+
+Solver.solve_without_heuristic(shakey, initial_state, goal)
+
+subgoal1 = shakey.set_goal(
+    'LightOnRoomA',
+    'LightOnRoomB',
+    'RobotInRoomB',
+    'Box1InRoomB',
+    'Ball1InRoomB',
+    'Box2InRoomA',
+    'RobotCarryingBall3'
+)
+
+subgoal2 = shakey.set_goal(
+    'Box1InRoomC',
+    'Ball3InRoomC',
+    'LightOnRoomC',
+    'Box3InRoomA',
+    'Box2InRoomB',
+    'RobotInRoomC',
+    'RobotCarryingBall2'
+)
+
+Solver.solve_with_subgoal(shakey, initial_state, subgoal1, subgoal2, goal, False)
+
 print('-----------------------------HANOI TOWER 4 (20+ STEPS)---------------------------------')
 print('---------------------------------------------------------------------------------------')
 
