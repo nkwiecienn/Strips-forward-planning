@@ -96,7 +96,12 @@ class Hanoi:
 
         return goal
 
-
+    @staticmethod
+    def set_subgoal(*args):
+        goal = {}
+        for arg in args:
+            goal[arg] = True
+        return goal
 
 def solve_hanoi(size):
     hanoi = Hanoi(size)
@@ -113,11 +118,6 @@ def solve_hanoi(size):
     end_time = time.time()
     print(f"Time taken without subgoals: {end_time - start_time} seconds")
 
-def set_subgoal(*args):
-    goal = {}
-    for arg in args:
-        goal[arg] = True
-    return goal
 
 def solve_with_subgoal(size, subgoal1, subgoal2):
     hanoi = Hanoi(size)
@@ -152,39 +152,3 @@ def solve_with_subgoal(size, subgoal1, subgoal2):
 
     sub_end_time = time.time()
     print(f"Time taken with subgoals: {sub_end_time - sub_start_time} seconds")
-
-goal1 = set_subgoal(
-    'AOnD',
-    'DOnTower1',
-    'COnTower2',
-    'BOnTower3'
-)
-
-goal2 = set_subgoal(
-    'AOnD',
-    'BOnTower1',
-    'COnTower2',
-    'DOnTower3'
-)
-
-solve_hanoi(4)
-solve_with_subgoal(4, goal1, goal2)
-
-goal1_5 = set_subgoal(
-    'AOnB',
-    'BOnC',
-    'COnD',
-    'DOnTower2',
-    'EOnTower1'
-)
-
-goal2_5 = set_subgoal(
-    'AOnB',
-    'BOnC',
-    'COnTower1',
-    'DOnTower2',
-    'EOnTower3'
-)
-
-solve_hanoi(5)
-solve_with_subgoal(5, goal1_5, goal2_5)
