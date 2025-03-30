@@ -97,13 +97,94 @@ class Hanoi:
         return goal
 
 
-hanoi = Hanoi(3)
-initial_state = hanoi.set_initial_state()
-goal = hanoi.set_goal()
-problem = Planning_problem(
-    hanoi.domain,
-    initial_state,
-    goal,
+
+def solve_hanoi(size):
+    hanoi = Hanoi(size)
+    initial_state = hanoi.set_initial_state()
+    goal = hanoi.set_goal()
+    problem = Planning_problem(
+        hanoi.domain,
+        initial_state,
+        goal,
+    )
+
+    start_time = time.time()
+    SearcherMPP(Forward_STRIPS(problem)).search()
+    end_time = time.time()
+    print(f"Time taken without subgoals: {end_time - start_time} seconds")
+
+def set_subgoal(*args):
+    goal = {}
+    for arg in args:
+        goal[arg] = True
+    return goal
+
+def solve_with_subgoal(size, subgoal1, subgoal2):
+    hanoi = Hanoi(size)
+    initial_state = hanoi.set_initial_state()
+    goal = hanoi.set_goal()
+
+    subproblem1 = Planning_problem(
+        hanoi.domain,
+        initial_state,
+        subgoal1,
+    )
+
+    sub_start_time = time.time()
+
+    subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1)).search().end().assignment
+
+    subproblem2 = Planning_problem(
+        hanoi.domain,
+        subsolution1,
+        subgoal2,
+    )
+
+    subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2)).search().end().assignment
+
+    final_problem = Planning_problem(
+        hanoi.domain,
+        subsolution2,
+        goal
+    )
+
+    SearcherMPP(Forward_STRIPS(final_problem)).search()
+
+    sub_end_time = time.time()
+    print(f"Time taken with subgoals: {sub_end_time - sub_start_time} seconds")
+
+goal1 = set_subgoal(
+    'AOnD',
+    'DOnTower1',
+    'COnTower2',
+    'BOnTower3'
 )
 
-SearcherMPP(Forward_STRIPS(problem)).search()
+goal2 = set_subgoal(
+    'AOnD',
+    'BOnTower1',
+    'COnTower2',
+    'DOnTower3'
+)
+
+solve_hanoi(4)
+solve_with_subgoal(4, goal1, goal2)
+
+goal1_5 = set_subgoal(
+    'AOnB',
+    'BOnC',
+    'COnD',
+    'DOnTower2',
+    'EOnTower1'
+)
+
+goal2_5 = set_subgoal(
+    'AOnB',
+    'BOnC',
+    'COnTower1',
+    'DOnTower2',
+    'EOnTower3'
+)
+
+solve_hanoi(5)
+solve_with_subgoal(5, goal1_5, goal2_5)
