@@ -4,14 +4,18 @@ from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
 
 class BlocksWorld:
-    def __init__(self):
+    def __init__(self, num_of_blocks=3):
         self.boolean = [False, True]
-        self.blocks = ['A', 'B', 'C', 'D', 'E', 'F']
+        self.blocks = self.generate_blocks_list(num_of_blocks)
         self.states = self.generate_domain_dict()
         self.domain = STRIPS_domain(
             self.states,
             self.generate_actions_dict(),
         )
+
+    def generate_blocks_list(self, num_of_blocks=3):
+        return [chr(i) for i in range(65, 65 + num_of_blocks)]
+
 
     def generate_domain_dict(self):
         domain = {}
@@ -105,7 +109,7 @@ def set_goal(*args):
 # A B F
 
 initial_state = set_initial_state(
-    BlocksWorld().states,
+    BlocksWorld(6).states,
     'COnD',
     'DOnA',
     'AOnTable',
@@ -132,7 +136,7 @@ goal = set_goal(
 )
 
 problem = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     initial_state,
     goal
 )
@@ -165,7 +169,7 @@ subgoal2 = set_goal(
 )
 
 subproblem1 = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     initial_state,
     subgoal1,
 )
@@ -173,7 +177,7 @@ subproblem1 = Planning_problem(
 subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1)).search().end().assignment
 
 subproblem2 = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     subsolution1,
     subgoal2,
 )
@@ -181,7 +185,7 @@ subproblem2 = Planning_problem(
 subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2)).search().end().assignment
 
 finalproblem = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     subsolution2,
     goal
 )
@@ -205,7 +209,7 @@ subgoal2 = set_goal(
 )
 
 subproblem1 = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     initial_state,
     subgoal1,
 )
@@ -213,7 +217,7 @@ subproblem1 = Planning_problem(
 subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1, heur=BlocksWorld.heuristic)).search().end().assignment
 
 subproblem2 = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     subsolution1,
     subgoal2,
 )
@@ -221,7 +225,7 @@ subproblem2 = Planning_problem(
 subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2, heur=BlocksWorld.heuristic)).search().end().assignment
 
 finalproblem = Planning_problem(
-    BlocksWorld().domain,
+    BlocksWorld(6).domain,
     subsolution2,
     goal
 )
