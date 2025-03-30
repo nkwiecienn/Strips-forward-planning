@@ -16,33 +16,32 @@ class BlocksWorld:
 
     def generate_domain_dict(self):
         domain = {}
-        for i in ['A', 'B', 'C']:
+        for i in self.blocks:
             name = i + 'OnTable'
             domain[name] = self.boolean
             name = i + 'InHand'
             domain[name] = self.boolean
-            for j in ['A', 'B', 'C']:
+            for j in self.blocks:
                 if i != j:
                     name = i + 'On' + j
                     domain[name] = self.boolean
 
         return domain
 
-    @staticmethod
-    def generate_actions_dict():
+    def generate_actions_dict(self):
         actions = []
 
         # Pickup (from Table)
-        for i in ['A', 'B', 'C']:
+        for i in self.blocks:
             actions.append(Strips(
                 'PickUp' + i,
-                {i + 'OnTable': True, **{k + 'InHand': False for k in ['A', 'B', 'C']},
-                 **{k + 'On' + i: False for k in ['A', 'B', 'C'] if k != i}},
+                {i + 'OnTable': True, **{k + 'InHand': False for k in self.blocks},
+                 **{k + 'On' + i: False for k in self.blocks if k != i}},
                 {i + 'OnTable': False, i + 'InHand': True}
             ))
 
         # Put down (on Table)
-        for i in ['A', 'B', 'C']:
+        for i in self.blocks:
             actions.append(Strips(
                 'PutDown' + i,
                 {i + 'InHand': True},
@@ -50,23 +49,23 @@ class BlocksWorld:
             ))
 
         # Unstack (from another block)
-        for i in ['A', 'B', 'C']:
-            for j in ['A', 'B', 'C']:
+        for i in self.blocks:
+            for j in self.blocks:
                 if i != j:
                     actions.append(Strips(
                         'Unstack' + i + j,
-                        {i + 'On' + j: True, **{k + 'InHand': False for k in ['A', 'B', 'C']},
-                         **{k + 'On' + i: False for k in ['A', 'B', 'C'] if k != i}},
+                        {i + 'On' + j: True, **{k + 'InHand': False for k in self.blocks},
+                         **{k + 'On' + i: False for k in self.blocks if k != i}},
                         {i + 'On' + j: False, i + 'InHand': True}
                     ))
 
         # Stack (on another block)
-        for i in ['A', 'B', 'C']:
-            for j in ['A', 'B', 'C']:
+        for i in self.blocks:
+            for j in self.blocks:
                 if i != j:
                     actions.append(Strips(
                         'Stack' + i + j,
-                        {i + 'InHand': True, **{k + 'On' + j: False for k in ['A', 'B', 'C'] if k != j}},
+                        {i + 'InHand': True, **{k + 'On' + j: False for k in self.blocks if k != j}},
                         {i + 'On' + j: True, i + 'InHand': False}
                     ))
 
@@ -102,18 +101,41 @@ def set_goal(*args):
     return goal
 
 # Problem:
-# C
-# A B
+# D
+# C E
+# A B F
+
+initial_state = set_initial_state(
+    BlocksWorld().states,
+    'DOnC',
+    'COnA',
+    'AOnTable',
+    'EOnB',
+    'BOnTable',
+    'FOnTable'
+)
 
 # Goal:
 # A
 # B
 # C
+# D
+# E
+# F
+
+goal = set_goal(
+    'FOnTable',
+    'EOnF',
+    'DOnE',
+    'COnD',
+    'BOnC',
+    'AOnB'
+)
 
 problem = Planning_problem(
     BlocksWorld().domain,
-    set_initial_state(BlocksWorld().states, 'COnA', 'AOnTable', 'BOnTable'),
-    set_goal('AOnB', 'BOnC', 'COnTable')
+    initial_state,
+    goal
 )
 
 SearcherMPP(Forward_STRIPS(problem)).search()
