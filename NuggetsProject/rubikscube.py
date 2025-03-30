@@ -61,7 +61,7 @@ class RubiksCube:
 
 
 # Define the initial and goal states
-initial_state = {'Position1': 1, 'Position2': 3, 'Position3': 4, 'Position4': 5, 'Position5': 6, 'Position6': 2}
+initial_state = {'Position1': 4, 'Position2': 5, 'Position3': 2, 'Position4': 3, 'Position5': 1, 'Position6': 6}
 goal_state = {'Position1': 1, 'Position2': 2, 'Position3': 3, 'Position4': 4, 'Position5': 5, 'Position6': 6}
 
 # Create the planning problem
@@ -70,6 +70,8 @@ problem = Planning_problem(
     initial_state,
     goal_state,
 )
+
+print("--------------------------------------TASKS 1------------------------------------------------------------")
 
 # Search for the solution
 start_time = time.time()
@@ -81,3 +83,71 @@ start_time = time.time()
 SearcherMPP(Forward_STRIPS(problem, heur=RubiksCube.heuristic)).search()
 end_time = time.time()
 print(f"Time taken with heuristic: {end_time - start_time} seconds")
+
+print("--------------------------------------TASKS 2------------------------------------------------------------")
+
+start_time = time.time()
+
+subgoal1 = {'Position1': 1, 'Position2': 6, 'Position3': 2, 'Position4': 3, 'Position5': 4, 'Position6': 5}
+
+subgoal2 = {'Position1': 1, 'Position2': 4, 'Position3': 5, 'Position4': 6, 'Position5': 2, 'Position6': 3}
+
+subproblem1 = Planning_problem(
+    RubiksCube().domain,
+    initial_state,
+    subgoal1,
+)
+
+subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1)).search().end().assignment
+
+subproblem2 = Planning_problem(
+    RubiksCube().domain,
+    subsolution1,
+    subgoal2,
+)
+
+subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2)).search().end().assignment
+
+finalproblem = Planning_problem(
+    RubiksCube().domain,
+    subsolution2,
+    goal_state,
+)
+
+SearcherMPP(Forward_STRIPS(finalproblem)).search()
+
+end_time = time.time()
+print(f"Time taken without heuristic but with subgoals: {end_time - start_time} seconds")
+
+start_time = time.time()
+
+subgoal1 = {'Position1': 1, 'Position2': 6, 'Position3': 2, 'Position4': 3, 'Position5': 4, 'Position6': 5}
+
+subgoal2 = {'Position1': 1, 'Position2': 4, 'Position3': 5, 'Position4': 6, 'Position5': 2, 'Position6': 3}
+
+subproblem1 = Planning_problem(
+    RubiksCube().domain,
+    initial_state,
+    subgoal1,
+)
+
+subsolution1 = SearcherMPP(Forward_STRIPS(subproblem1, heur=RubiksCube.heuristic)).search().end().assignment
+
+subproblem2 = Planning_problem(
+    RubiksCube().domain,
+    subsolution1,
+    subgoal2,
+)
+
+subsolution2 = SearcherMPP(Forward_STRIPS(subproblem2, heur=RubiksCube.heuristic)).search().end().assignment
+
+finalproblem = Planning_problem(
+    RubiksCube().domain,
+    subsolution2,
+    goal_state,
+)
+
+SearcherMPP(Forward_STRIPS(finalproblem, heur=RubiksCube.heuristic)).search()
+
+end_time = time.time()
+print(f"Time taken with heuristic and subgoals: {end_time - start_time} seconds")

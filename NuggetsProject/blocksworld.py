@@ -229,4 +229,4 @@ finalproblem = Planning_problem(
 SearcherMPP(Forward_STRIPS(finalproblem, heur=BlocksWorld.heuristic)).search()
 
 end_time = time.time()
-print(f"Time taken without heuristic but with subgoals: {end_time - start_time} seconds")
+print(f"Time taken without heuristic and with subgoals: {end_time - start_time} seconds")
