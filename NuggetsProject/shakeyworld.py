@@ -117,7 +117,7 @@ class ShakeyWorld:
 
         for key in goal:
             if state.get(key) != goal[key]:
-                if 'In' in key or 'RobotIn' in key:
+                if 'In' in key:
                     item, goal_room = key.split('In')
                     for room in state:
                         if state[room] and room.startswith(f'{item}In'):

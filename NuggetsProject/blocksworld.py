@@ -75,18 +75,17 @@ class BlocksWorld:
 
         return actions
 
-    @staticmethod
-    def heuristic(state, goal):
+    def heuristic(self, state, goal):
         cost = 0
 
         for key in goal:
             if state.get(key) != goal[key]:
-                block, position = key.split('On')
-                if state.get(block + 'InHand', False):
-                    continue
-                if state.get(position + 'On' + block, False):
-                    cost += 2
-                else:
+                if 'On' in key:
+                    top, bottom = key.split('On')
+                    for block in self.blocks:
+                        if block != top and state[block + 'On' + top]:
+                            cost += 1
+                            break
                     cost += 1
 
         return cost
